@@ -107,4 +107,5 @@ function __ffmpegjs(__ffmpegjs_opts) {
       return {"name": file.name, "data": data};
     });
     __ffmpegjs_return = {"MEMFS": outFiles};
+    Module["done"](__ffmpegjs_return)
   };
