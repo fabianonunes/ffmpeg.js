@@ -321,14 +321,19 @@ build/ffmpeg-mp4/ffmpeg.bc: $(MP4_SHARED_DEPS)
 # Compile bitcode to JavaScript.
 # NOTE(Kagami): Bump heap size to 64M, default 16M is not enough even
 # for simple tests and 32M tends to run slower than 64M.
+
 EMCC_COMMON_ARGS = \
-	--closure 1 \
-	-s NODE_STDOUT_FLUSH_WORKAROUND=0 \
-	-s TOTAL_MEMORY=67108864 \
-	-s OUTLINING_LIMIT=20000 \
-	-O3 --memory-init-file 0 \
+	-s TOTAL_MEMORY=33554432 \
+	-s OUTLINING_LIMIT=100000 \
+	-O3 \
+	--memory-init-file 0 \
 	--pre-js $(PRE_JS) \
 	-o $@
+
+#	-s AGGRESSIVE_VARIABLE_ELIMINATION=1
+#	-s INLINING_LIMIT=1
+#	--llvm-lto 1
+#	--closure 1
 
 ffmpeg-webm.js: $(FFMPEG_WEBM_BC) $(PRE_JS) $(POST_JS_SYNC)
 	emcc $(FFMPEG_WEBM_BC) $(WEBM_SHARED_DEPS) \
