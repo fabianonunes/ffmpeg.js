@@ -14,7 +14,7 @@ function __ffmpegjs(__ffmpegjs_opts) {
       data = new Uint8Array(0);
     } else if (!(data instanceof Uint8Array)) {
       // Avoid unnecessary copying.
-      data = new Uint8Array(data.buffer);
+      data = new Uint8Array(data.buffer || []);
     }
     return data;
   }
