@@ -59,6 +59,12 @@ function __ffmpegjs(__ffmpegjs_opts) {
       FS.write(fd, data, 0, data.length);
       FS.close(fd);
     });
+    (__ffmpegjs_opts["LAZYFS"] || []).forEach(function(file) {
+      if (file["name"].match(/\//)) {
+        throw new Error("Bad file name");
+      }
+      FS.createLazyFile('/work', file["name"], file["url"], true, false);
+    });
   };
 
   Module["postRun"] = function() {
