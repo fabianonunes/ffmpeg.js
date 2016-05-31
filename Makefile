@@ -7,12 +7,11 @@ POST_JS_SYNC = build/post-sync.js
 POST_JS_WORKER = build/post-worker.js
 
 COMMON_FILTERS = aresample scale crop
-COMMON_DEMUXERS = matroska ogg avi mov flv mpegps image2 mp3 concat
+COMMON_DEMUXERS = matroska ogg avi mov flv mpegps concat
 COMMON_DECODERS = \
 	vp8 vp9 theora \
-	mpeg2video mpeg4 h264 hevc \
-	png mjpeg \
 	vorbis opus \
+	mpeg2video mpeg4 h264 hevc \
 	mp3 ac3 aac \
 	ass ssa srt webvtt
 
@@ -35,7 +34,7 @@ WEBM_SHARED_DEPS = \
 	build/libvpx/dist/lib/libvpx.so
 
 MP4_MUXERS = mp4 mp3 null
-MP4_ENCODERS = libx264 libmp3lame aac
+MP4_ENCODERS = libx264 libmp3lame
 FFMPEG_MP4_BC = build/ffmpeg-mp4/ffmpeg.bc
 FFMPEG_MP4_PC_PATH = ../x264/dist/lib/pkgconfig
 MP4_SHARED_DEPS = \
@@ -82,9 +81,6 @@ build/opus/dist/lib/libopus.so: build/opus/configure
 		--disable-static \
 		--disable-doc \
 		--disable-extra-programs \
-		--disable-asm \
-		--disable-rtcd \
-		--disable-intrinsics \
 		&& \
 	emmake make -j8 && \
 	emmake make install
@@ -168,6 +164,7 @@ build/libvpx/dist/lib/libvpx.so:
 		--disable-libyuv \
 		--disable-vp8-decoder \
 		--disable-vp9 \
+		--disable-vp10 \
 		&& \
 	emmake make -j8 && \
 	emmake make install
@@ -324,13 +321,19 @@ build/ffmpeg-mp4/ffmpeg.bc: $(MP4_SHARED_DEPS)
 # Compile bitcode to JavaScript.
 # NOTE(Kagami): Bump heap size to 64M, default 16M is not enough even
 # for simple tests and 32M tends to run slower than 64M.
+
 EMCC_COMMON_ARGS = \
-	--closure 1 \
-	-s TOTAL_MEMORY=67108864 \
-	-s OUTLINING_LIMIT=20000 \
-	-O3 --memory-init-file 0 \
+	-s TOTAL_MEMORY=33554432 \
+	-s OUTLINING_LIMIT=100000 \
+	-O3 \
+	--memory-init-file 0 \
 	--pre-js $(PRE_JS) \
 	-o $@
+
+#	-s AGGRESSIVE_VARIABLE_ELIMINATION=1
+#	-s INLINING_LIMIT=1
+#	--llvm-lto 1
+#	--closure 1
 
 ffmpeg-webm.js: $(FFMPEG_WEBM_BC) $(PRE_JS) $(POST_JS_SYNC)
 	emcc $(FFMPEG_WEBM_BC) $(WEBM_SHARED_DEPS) \
