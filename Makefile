@@ -231,32 +231,61 @@ FFMPEG_COMMON_ARGS = \
 	--disable-debug \
 	--disable-stripping \
 	\
-	--disable-all \
-	--enable-ffmpeg \
-	--enable-avcodec \
-	--enable-avformat \
-	--enable-avutil \
-	--enable-swresample \
-	--enable-swscale \
-	--enable-avfilter \
+	--disable-ffplay \
+	--disable-ffprobe \
+	--disable-ffserver \
+	--disable-asm \
+	--disable-doc \
+	--disable-devices \
+	--disable-pthreads \
+	--disable-w32threads \
 	--disable-network \
-	--disable-d3d11va \
-	--disable-dxva2 \
-	--disable-vaapi \
-	--disable-vda \
-	--disable-vdpau \
-	$(addprefix --enable-decoder=,$(COMMON_DECODERS)) \
-	$(addprefix --enable-demuxer=,$(COMMON_DEMUXERS)) \
+	--disable-hwaccels \
+	--disable-parsers \
+	--disable-bsfs \
+	--disable-debug \
+	--disable-protocols \
+	--disable-indevs \
+	--disable-outdevs \
+	--disable-everything \
 	--enable-protocol=file \
-	$(addprefix --enable-filter=,$(COMMON_FILTERS)) \
-	--disable-bzlib \
+	--enable-muxer=mp4 \
+	--enable-demuxer=aac,h264,mov \
+	--disable-avdevice \
+	--disable-logging \
 	--disable-iconv \
-	--disable-libxcb \
-	--disable-lzma \
-	--disable-sdl \
-	--disable-securetransport \
-	--disable-xlib \
-	--disable-zlib
+	--disable-bzlib \
+	--disable-avx \
+	--disable-fma4 \
+	--disable-postproc \
+	--disable-zlib \
+	--disable-doc
+	# --disable-all \
+	# --enable-ffmpeg \
+	# --enable-avcodec \
+	# --enable-avformat \
+	# --enable-avutil \
+	# --enable-swresample \
+	# --enable-swscale \
+	# --enable-avfilter \
+	# --disable-network \
+	# --disable-d3d11va \
+	# --disable-dxva2 \
+	# --disable-vaapi \
+	# --disable-vda \
+	# --disable-vdpau \
+	# $(addprefix --enable-decoder=,$(COMMON_DECODERS)) \
+	# $(addprefix --enable-demuxer=,$(COMMON_DEMUXERS)) \
+	# --enable-protocol=file \
+	# $(addprefix --enable-filter=,$(COMMON_FILTERS)) \
+	# --disable-bzlib \
+	# --disable-iconv \
+	# --disable-libxcb \
+	# --disable-lzma \
+	# --disable-sdl \
+	# --disable-securetransport \
+	# --disable-xlib \
+	# --disable-zlib
 
 build/ffmpeg-webm/ffmpeg.bc: $(WEBM_SHARED_DEPS)
 	cd build/ffmpeg-webm && \
@@ -283,11 +312,6 @@ build/ffmpeg-mp4/ffmpeg.bc: $(MP4_SHARED_DEPS)
 	patch -p1 < ../ffmpeg-disable-monotonic.patch && \
 	EM_PKG_CONFIG_PATH=$(FFMPEG_MP4_PC_PATH) emconfigure ./configure \
 		$(FFMPEG_COMMON_ARGS) \
-		$(addprefix --enable-encoder=,$(MP4_ENCODERS)) \
-		$(addprefix --enable-muxer=,$(MP4_MUXERS)) \
-		--enable-gpl \
-		--enable-libmp3lame \
-		--enable-libx264 \
 		--extra-cflags="-I../lame/dist/include" \
 		--extra-ldflags="-L../lame/dist/lib" \
 		&& \
