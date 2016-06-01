@@ -63,7 +63,7 @@ function __ffmpegjs(__ffmpegjs_opts) {
       if (file["name"].match(/\//)) {
         throw new Error("Bad file name");
       }
-      FS.createLazyFile('/work', file["name"], file["url"], true, false);
+      FS.createLazyFile('/work', file["name"], file["data"], true, false);
     });
   };
 
