@@ -248,7 +248,7 @@ FFMPEG_COMMON_ARGS = \
 	--disable-indevs \
 	--disable-outdevs \
 	--disable-everything \
-	--enable-protocol=file \
+	--enable-protocol=file,pipe \
 	--enable-muxer=mp4 \
 	--enable-demuxer=aac,h264,mov \
 	--disable-avdevice \
@@ -324,7 +324,7 @@ build/ffmpeg-mp4/ffmpeg.bc: $(MP4_SHARED_DEPS)
 
 EMCC_COMMON_ARGS = \
 	-s TOTAL_MEMORY=67108864 \
-	-s OUTLINING_LIMIT=100000 \
+	-s OUTLINING_LIMIT=20000 \
 	-s AGGRESSIVE_VARIABLE_ELIMINATION=1 \
 	-s INLINING_LIMIT=1 \
 	-s MEMFS_APPEND_TO_TYPED_ARRAYS=1 \
