@@ -238,9 +238,10 @@ FFMPEG_COMMON_ARGS = \
 	--disable-network \
 	--disable-debug \
 	--disable-everything \
-	--enable-protocol=file,pipe \
+	--enable-protocol=file \
 	--enable-muxer=mp4 \
-	--enable-demuxer=aac,h264,mov \
+	--enable-demuxer=aac,h264,mov,concat \
+	--enable-bsf=h264_mp4toannexb \
 	--disable-avdevice \
 	--disable-logging \
 	--disable-iconv \
