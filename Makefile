@@ -43,7 +43,7 @@ MP4_SHARED_DEPS = \
 
 all: webm mp4
 webm: ffmpeg-webm.js ffmpeg-worker-webm.js
-mp4: ffmpeg-mp4.js ffmpeg-worker-mp4.js
+mp4: ffmpeg-worker-mp4.js
 
 clean: clean-js \
 	clean-freetype clean-fribidi clean-libass \
@@ -353,6 +353,6 @@ ffmpeg-mp4.js: $(FFMPEG_MP4_BC) $(PRE_JS) $(POST_JS_SYNC)
 		$(EMCC_COMMON_ARGS)
 
 ffmpeg-worker-mp4.js: $(FFMPEG_MP4_BC) $(PRE_JS) $(POST_JS_WORKER)
-	emcc $(FFMPEG_MP4_BC) $(MP4_SHARED_DEPS) \
+	emcc $(FFMPEG_MP4_BC) \
 		--post-js $(POST_JS_WORKER) \
 		$(EMCC_COMMON_ARGS)
