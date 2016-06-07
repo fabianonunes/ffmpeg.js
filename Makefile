@@ -341,7 +341,7 @@ EMCC_COMMON_ARGS = \
 	-s MEMFS_APPEND_TO_TYPED_ARRAYS=1 \
 	-s ELIMINATE_DUPLICATE_FUNCTIONS=1 \
 	--llvm-lto 1 \
-	--closure 1 \
+	--closure 0 \
 	-O3 \
 	--memory-init-file 1 \
 	--pre-js $(PRE_JS) \
