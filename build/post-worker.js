@@ -53,6 +53,12 @@ self.onmessage = function(e) {
       // case of possible exception?
       opts["done"] = function (result) {
         __ffmpegjs_running = false;
+        var memFiles = (opts.MEMFS || []).map(function (file) { return file.name })
+        var lazyFiles = (opts.LAZYFS || []).map(function (file) { return file.name })
+        var inputFiles = memFiles.concat(lazyFiles)
+        result.MEMFS = result.MEMFS.filter(function (file) {
+          return inputFiles.indexOf(file.name) === -1
+        })
         var transfer = result["MEMFS"].map(function(file) {
           return file["data"].buffer;
         });
