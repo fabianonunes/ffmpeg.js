@@ -228,25 +228,15 @@ FFMPEG_COMMON_ARGS = \
 	--disable-pthreads \
 	--disable-w32threads \
 	--disable-os2threads \
-	--disable-debug \
 	--disable-stripping \
-	\
 	--disable-ffplay \
 	--disable-ffprobe \
 	--disable-ffserver \
 	--disable-asm \
-	--disable-doc \
-	--disable-devices \
 	--disable-pthreads \
 	--disable-w32threads \
 	--disable-network \
-	--disable-hwaccels \
-	--disable-parsers \
-	--disable-bsfs \
 	--disable-debug \
-	--disable-protocols \
-	--disable-indevs \
-	--disable-outdevs \
 	--disable-everything \
 	--enable-protocol=file,pipe \
 	--enable-muxer=mp4 \
@@ -258,8 +248,27 @@ FFMPEG_COMMON_ARGS = \
 	--disable-avx \
 	--disable-fma4 \
 	--disable-postproc \
+	--disable-bzlib \
 	--disable-zlib \
+	--disable-xlib \
+	--disable-lzma \
+	--disable-doc \
+	--disable-sdl \
+	--disable-securetransport \
+	\
 	--disable-doc
+	# --enable-gpl \
+	# --enable-decoder=mpeg4,h264 \
+	# --enable-encoder=libx264 \
+	# --enable-libx264 \
+	# --disable-symver \
+	# --enable-small \
+	# --disable-swscale \
+	# --enable-lto \
+	# --enable-memalign-hack \
+	# --enable-memalign-hack [PARECE REDUZIR USO MEMORIA]
+	# --disable-postproc \
+	#
 	# --disable-all \
 	# --enable-ffmpeg \
 	# --enable-avcodec \
