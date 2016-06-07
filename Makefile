@@ -333,16 +333,17 @@ build/ffmpeg-mp4/ffmpeg.bc: $(MP4_SHARED_DEPS)
 # for simple tests and 32M tends to run slower than 64M.
 
 EMCC_COMMON_ARGS = \
-	-s TOTAL_MEMORY=67108864 \
+	-s TOTAL_MEMORY=134217728 \
 	-s OUTLINING_LIMIT=20000 \
 	-s AGGRESSIVE_VARIABLE_ELIMINATION=1 \
 	-s INLINING_LIMIT=1 \
+	-s ASSERTIONS=0 \
 	-s MEMFS_APPEND_TO_TYPED_ARRAYS=1 \
 	-s ELIMINATE_DUPLICATE_FUNCTIONS=1 \
 	--llvm-lto 1 \
 	--closure 1 \
 	-O3 \
-	--memory-init-file 0 \
+	--memory-init-file 1 \
 	--pre-js $(PRE_JS) \
 	-o $@
 
