@@ -222,80 +222,57 @@ FFMPEG_COMMON_ARGS = \
 	--enable-cross-compile \
 	--target-os=none \
 	--arch=x86 \
+	\
+	--disable-logging \
+	\
 	--disable-runtime-cpudetect \
-	--disable-asm \
-	--disable-fast-unaligned \
+	--disable-swscale-alpha \
+	--enable-small \
+	\
+	--disable-programs \
+	--enable-ffmpeg \
+	\
+	--disable-avdevice \
+	--disable-swscale \
+	--disable-postproc \
 	--disable-pthreads \
 	--disable-w32threads \
 	--disable-os2threads \
-	--disable-stripping \
-	--disable-ffplay \
-	--disable-ffprobe \
-	--disable-ffserver \
-	--disable-asm \
-	--disable-pthreads \
-	--disable-w32threads \
 	--disable-network \
-	--disable-debug \
+	\
+	--disable-d3d11va \
+	--disable-dxva2 \
+	--disable-vaapi \
+	--disable-vda \
+	--disable-vdpau \
+	\
 	--disable-everything \
-	--enable-protocol=file \
+	--enable-decoder=aac \
+	--enable-demuxer=concat,aac,h264,mov,hls,mpegts \
 	--enable-muxer=mp4 \
-	--enable-demuxer=aac,h264,mov,concat \
-	--enable-bsf=h264_mp4toannexb \
-	--disable-avdevice \
-	--disable-logging \
+	--enable-protocol=file \
+	--enable-bsf=h264_mp4toannexb,aac_adtstoasc \
+	--enable-parser=aac,h264 \
+	\
+	--disable-bzlib \
 	--disable-iconv \
-	--disable-bzlib \
-	--disable-avx \
-	--disable-fma4 \
-	--disable-postproc \
-	--disable-bzlib \
-	--disable-zlib \
-	--disable-xlib \
 	--disable-lzma \
-	--disable-doc \
 	--disable-sdl \
-	--disable-securetransport \
+  	--disable-securetransport \
+	--disable-xlib \
+	--disable-zlib \
+	--disable-libxcb \
+	\
+	--disable-asm \
+	--disable-fast-unaligned \
+	--disable-fma4 \
+	--disable-avx \
+	--disable-avx2 \
+	\
+	--disable-debug \
+	--disable-stripping \
 	\
 	--disable-doc
-	# --enable-gpl \
-	# --enable-decoder=mpeg4,h264 \
-	# --enable-encoder=libx264 \
-	# --enable-libx264 \
-	# --disable-symver \
-	# --enable-small \
-	# --disable-swscale \
-	# --enable-lto \
-	# --enable-memalign-hack \
-	# --enable-memalign-hack [PARECE REDUZIR USO MEMORIA]
-	# --disable-postproc \
-	#
-	# --disable-all \
-	# --enable-ffmpeg \
-	# --enable-avcodec \
-	# --enable-avformat \
-	# --enable-avutil \
-	# --enable-swresample \
-	# --enable-swscale \
-	# --enable-avfilter \
-	# --disable-network \
-	# --disable-d3d11va \
-	# --disable-dxva2 \
-	# --disable-vaapi \
-	# --disable-vda \
-	# --disable-vdpau \
-	# $(addprefix --enable-decoder=,$(COMMON_DECODERS)) \
-	# $(addprefix --enable-demuxer=,$(COMMON_DEMUXERS)) \
-	# --enable-protocol=file \
-	# $(addprefix --enable-filter=,$(COMMON_FILTERS)) \
-	# --disable-bzlib \
-	# --disable-iconv \
-	# --disable-libxcb \
-	# --disable-lzma \
-	# --disable-sdl \
-	# --disable-securetransport \
-	# --disable-xlib \
-	# --disable-zlib
 
 build/ffmpeg-webm/ffmpeg.bc: $(WEBM_SHARED_DEPS)
 	cd build/ffmpeg-webm && \
