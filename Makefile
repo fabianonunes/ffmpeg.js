@@ -239,6 +239,11 @@ FFMPEG_COMMON_ARGS = \
 	--disable-w32threads \
 	--disable-os2threads \
 	--disable-network \
+	--disable-lsp \
+	--disable-lzo \
+	--disable-rdft \
+	--disable-faan \
+	--disable-pixelutils \
 	\
 	--disable-d3d11va \
 	--disable-dxva2 \
@@ -252,7 +257,7 @@ FFMPEG_COMMON_ARGS = \
 	--enable-muxer=mp4 \
 	--enable-protocol=file \
 	--enable-bsf=h264_mp4toannexb,aac_adtstoasc \
-	--enable-parser=aac,h264 \
+	--enable-parser=h264 \
 	\
 	--disable-bzlib \
 	--disable-iconv \
@@ -311,15 +316,15 @@ build/ffmpeg-mp4/ffmpeg.bc: $(MP4_SHARED_DEPS)
 
 EMCC_COMMON_ARGS = \
 	-s TOTAL_MEMORY=134217728 \
+	-s DISABLE_EXCEPTION_CATCHING=1 \
 	-s OUTLINING_LIMIT=20000 \
 	-s AGGRESSIVE_VARIABLE_ELIMINATION=1 \
 	-s INLINING_LIMIT=1 \
 	-s ASSERTIONS=0 \
 	-s MEMFS_APPEND_TO_TYPED_ARRAYS=1 \
 	-s ELIMINATE_DUPLICATE_FUNCTIONS=1 \
-	--llvm-lto 1 \
 	--closure 0 \
-	-O3 \
+	-O2 \
 	--memory-init-file 1 \
 	--pre-js $(PRE_JS) \
 	-o $@
