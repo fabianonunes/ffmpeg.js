@@ -222,6 +222,7 @@ FFMPEG_COMMON_ARGS = \
 	--enable-cross-compile \
 	--target-os=none \
 	--arch=x86 \
+	--enable-lto \
 	\
 	--disable-logging \
 	\
@@ -266,13 +267,11 @@ FFMPEG_COMMON_ARGS = \
   	--disable-securetransport \
 	--disable-xlib \
 	--disable-zlib \
-	--disable-libxcb \
 	\
 	--disable-asm \
 	--disable-fast-unaligned \
 	--disable-fma4 \
 	--disable-avx \
-	--disable-avx2 \
 	\
 	--disable-debug \
 	--disable-stripping \
