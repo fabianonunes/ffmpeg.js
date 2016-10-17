@@ -254,11 +254,10 @@ FFMPEG_COMMON_ARGS = \
 	\
 	--disable-everything \
 	--enable-decoder=aac \
-	--enable-demuxer=concat,aac,h264,mov,hls,mpegts \
+	--enable-demuxer=concat,aac,h264,mov \
 	--enable-muxer=mp4 \
 	--enable-protocol=file \
-	--enable-bsf=h264_mp4toannexb,aac_adtstoasc \
-	--enable-parser=h264 \
+	--enable-bsf=h264_mp4toannexb \
 	\
 	--disable-bzlib \
 	--disable-iconv \
@@ -277,6 +276,10 @@ FFMPEG_COMMON_ARGS = \
 	--disable-stripping \
 	\
 	--disable-doc
+	# ativar suporte ao hls e mpegts
+	# --enable-bsf=h264_mp4toannexb,aac_adtstoasc \
+	# --enable-demuxer=concat,aac,h264,mov,hls,mpegts \
+	# --enable-parser=h264 \
 
 build/ffmpeg-webm/ffmpeg.bc: $(WEBM_SHARED_DEPS)
 	cd build/ffmpeg-webm && \
