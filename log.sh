@@ -4,9 +4,12 @@ EMVERSIONS=$(~/downloads/emsdk_portable/emsdk list | grep -E '^\s+\*' | awk '{ p
 HASHID=$(crc32 ./ffmpeg-worker-mp4.js)
 cd build/ffmpeg-mp4
 VERSID=$(git describe)
-echo $VERSID "[$HASHID]"
+COMMITHASH=$(git rev-parse HEAD)
+echo $VERSID" ($COMMITHASH) / build_hash:[$HASHID]"
 cd ../..
 echo $EMVERSIONS > $HASHID.config
+echo "ffmpeg@($COMMITHASH)" >> $HASHID.config
 echo $1 >> $HASHID.config
 echo $2 >> $HASHID.config
-mv ffmpeg-worker-mp4.js ffmpeg-worker-mp4-$VERSID-$HASHID.js
+mkdir -p dist/$VERSID-$HASHID
+mv ffmpeg-worker-mp4* *.config dist/$VERSID-$HASHID
