@@ -1,5 +1,5 @@
 #!/bin/bash
-EMVERSIONS=$(~/downloads/emsdk_portable/emsdk list | grep -E '^\s+\*' | awk '{ print $2 }')
+EMVERSIONS=$(emsdk list | grep -E '^\s+\*' | awk '{ print $2 }')
 
 HASHID=$(crc32 ./ffmpeg-worker-mp4.js)
 cd build/ffmpeg-mp4
