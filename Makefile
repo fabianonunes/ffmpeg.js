@@ -38,7 +38,6 @@ MP4_ENCODERS = libx264 libmp3lame
 FFMPEG_MP4_BC = build/ffmpeg-mp4/ffmpeg.bc
 FFMPEG_MP4_PC_PATH = ../x264/dist/lib/pkgconfig
 MP4_SHARED_DEPS = \
-	build/lame/dist/lib/libmp3lame.so \
 	build/x264/dist/lib/libx264.so
 
 all: webm mp4
@@ -300,14 +299,12 @@ build/ffmpeg-webm/ffmpeg.bc: $(WEBM_SHARED_DEPS)
 	emmake make -j8 && \
 	cp ffmpeg ffmpeg.bc
 
-build/ffmpeg-mp4/ffmpeg.bc: $(MP4_SHARED_DEPS)
+build/ffmpeg-mp4/ffmpeg.bc:
 	cd build/ffmpeg-mp4 && \
 	git reset --hard && \
 	patch -p1 < ../ffmpeg-disable-monotonic.patch && \
 	EM_PKG_CONFIG_PATH=$(FFMPEG_MP4_PC_PATH) emconfigure ./configure \
 		$(FFMPEG_COMMON_ARGS) \
-		--extra-cflags="-I../lame/dist/include" \
-		--extra-ldflags="-L../lame/dist/lib" \
 		&& \
 	emmake make -j8 && \
 	cp ffmpeg ffmpeg.bc
