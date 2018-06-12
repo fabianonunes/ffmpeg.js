@@ -315,16 +315,15 @@ build/ffmpeg-mp4/ffmpeg.bc:
 
 EMCC_COMMON_ARGS = \
 	-s TOTAL_MEMORY=134217728 \
-	-s OUTLINING_LIMIT=30000 \
 	-s AGGRESSIVE_VARIABLE_ELIMINATION=1 \
 	-s INLINING_LIMIT=0 \
 	-s ASSERTIONS=0 \
 	-s MEMFS_APPEND_TO_TYPED_ARRAYS=1 \
-	-s ELIMINATE_DUPLICATE_FUNCTIONS=1 \
+	-s WASM=1 \
+	-s BINARYEN=1 \
 	--closure 0 \
 	-O3 \
-	--memory-init-file 1 \
-	--pre-js $(PRE_JS) \
+	--memory-init-file 0 \
 	-o $@
 
 
@@ -345,6 +344,5 @@ ffmpeg-mp4.js: $(FFMPEG_MP4_BC) $(PRE_JS) $(POST_JS_SYNC)
 
 ffmpeg-worker-mp4.js: $(FFMPEG_MP4_BC) $(PRE_JS) $(POST_JS_WORKER)
 	emcc $(FFMPEG_MP4_BC) \
-		--post-js $(POST_JS_WORKER) \
 		$(EMCC_COMMON_ARGS)
 	@./log.sh "$(EMCC_COMMON_ARGS)" "$(FFMPEG_COMMON_ARGS)"
