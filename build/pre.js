@@ -67,6 +67,21 @@ function __ffmpegjs(__ffmpegjs_opts) {
     FS.mkdir("/work");
     FS.chdir("/work");
 
+    FS.registerDevice(FS.makedev(14, 3), {
+      write: (stream, buffer, offset, length, pos) => {
+        const chunk = buffer.slice(offset, offset + length);
+        self.postMessage({
+          type: "output",
+          data: {
+            chunk,
+            size: length,
+          },
+        }, [chunk.buffer]);
+        return length;
+      },
+    });
+    FS.mkdev('/dev/output', FS.makedev(14, 3));
+
     (__ffmpegjs_opts["MEMFS"] || []).forEach(function(file) {
       if (file["name"].match(/\//)) {
         throw new Error("Bad file name");
