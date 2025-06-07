@@ -117,7 +117,6 @@ EMCC_COMMON_ARGS = \
 	--memory-init-file 0 \
 	-o $@
 
-
 ffmpeg-worker-mp4.js: $(FFMPEG_MP4_BC) $(PRE_JS) $(POST_JS_WORKER)
 	emcc $(FFMPEG_MP4_BC) \
 		$(EMCC_COMMON_ARGS)
