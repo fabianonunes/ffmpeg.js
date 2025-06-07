@@ -6,41 +6,17 @@ PRE_JS = build/pre.js
 POST_JS_SYNC = build/post-sync.js
 POST_JS_WORKER = build/post-worker.js
 
-COMMON_FILTERS = aresample scale crop
-COMMON_DEMUXERS = matroska ogg avi mov flv mpegps concat
-COMMON_DECODERS = \
-	vp8 vp9 theora \
-	vorbis opus \
-	mpeg2video mpeg4 h264 hevc \
-	mp3 ac3 aac \
-	ass ssa srt webvtt
-
-WEBM_MUXERS = webm ogg null image2
-WEBM_ENCODERS = libvpx_vp8 libopus mjpeg
-FFMPEG_WEBM_BC = build/ffmpeg-webm/ffmpeg.bc
 LIBASS_PC_PATH = ../freetype/dist/lib/pkgconfig:../fribidi/dist/lib/pkgconfig
-FFMPEG_WEBM_PC_PATH_ = \
-	$(LIBASS_PC_PATH):\
-	../libass/dist/lib/pkgconfig:\
-	../opus/dist/lib/pkgconfig
-FFMPEG_WEBM_PC_PATH = $(subst : ,:,$(FFMPEG_WEBM_PC_PATH_))
 LIBASS_DEPS = \
 	build/fribidi/dist/lib/libfribidi.so \
 	build/freetype/dist/lib/libfreetype.so
-WEBM_SHARED_DEPS = \
-	$(LIBASS_DEPS) \
-	build/libass/dist/lib/libass.so \
-	build/opus/dist/lib/libopus.so \
-	build/libvpx/dist/lib/libvpx.so
 
-MP4_MUXERS = mp4 mp3 null
-MP4_ENCODERS = libx264 libmp3lame
 FFMPEG_MP4_BC = build/ffmpeg-mp4/ffmpeg.bc
 FFMPEG_MP4_PC_PATH = ../x264/dist/lib/pkgconfig
 MP4_SHARED_DEPS = \
 	build/x264/dist/lib/libx264.so
 
-all: webm mp4
+all: mp4
 webm: ffmpeg-webm.js ffmpeg-worker-webm.js
 mp4: ffmpeg-worker-mp4.js
 
@@ -248,20 +224,19 @@ FFMPEG_COMMON_ARGS = \
 	--disable-d3d11va \
 	--disable-dxva2 \
 	--disable-vaapi \
-	--disable-vda \
 	--disable-vdpau \
 	\
 	--disable-everything \
 	--enable-decoder=aac \
 	--enable-demuxer=concat,aac,h264,mov \
 	--enable-muxer=mp4 \
-	--enable-protocol=file \
+	--enable-protocol=file,pipe \
 	--enable-bsf=h264_mp4toannexb \
 	\
 	--disable-bzlib \
 	--disable-iconv \
 	--disable-lzma \
-	--disable-sdl \
+	--disable-sdl2 \
 	--disable-securetransport \
 	--disable-xlib \
 	--disable-zlib \
@@ -273,6 +248,7 @@ FFMPEG_COMMON_ARGS = \
 	\
 	--disable-debug \
 	--disable-stripping \
+	--disable-safe-bitstream-reader \
 	\
 	--disable-doc
 	# ativar suporte ao hls e mpegts
@@ -280,29 +256,8 @@ FFMPEG_COMMON_ARGS = \
 	# --enable-demuxer=concat,aac,h264,mov,hls,mpegts \
 	# --enable-parser=h264 \
 
-build/ffmpeg-webm/ffmpeg.bc: $(WEBM_SHARED_DEPS)
-	cd build/ffmpeg-webm && \
-	git reset --hard && \
-	patch -p1 < ../ffmpeg-default-font.patch && \
-	patch -p1 < ../ffmpeg-disable-monotonic.patch && \
-	EM_PKG_CONFIG_PATH=$(FFMPEG_WEBM_PC_PATH) emconfigure ./configure \
-		$(FFMPEG_COMMON_ARGS) \
-		$(addprefix --enable-encoder=,$(WEBM_ENCODERS)) \
-		$(addprefix --enable-muxer=,$(WEBM_MUXERS)) \
-		--enable-filter=subtitles \
-		--enable-libass \
-		--enable-libopus \
-		--enable-libvpx \
-		--extra-cflags="-I../libvpx/dist/include" \
-		--extra-ldflags="-L../libvpx/dist/lib" \
-		&& \
-	emmake make -j8 && \
-	cp ffmpeg ffmpeg.bc
-
 build/ffmpeg-mp4/ffmpeg.bc:
 	cd build/ffmpeg-mp4 && \
-	git reset --hard && \
-	patch -p1 < ../ffmpeg-disable-monotonic.patch && \
 	EM_PKG_CONFIG_PATH=$(FFMPEG_MP4_PC_PATH) emconfigure ./configure \
 		$(FFMPEG_COMMON_ARGS) \
 		&& \
@@ -326,21 +281,6 @@ EMCC_COMMON_ARGS = \
 	--memory-init-file 0 \
 	-o $@
 
-
-ffmpeg-webm.js: $(FFMPEG_WEBM_BC) $(PRE_JS) $(POST_JS_SYNC)
-	emcc $(FFMPEG_WEBM_BC) $(WEBM_SHARED_DEPS) \
-		--post-js $(POST_JS_SYNC) \
-		$(EMCC_COMMON_ARGS)
-
-ffmpeg-worker-webm.js: $(FFMPEG_WEBM_BC) $(PRE_JS) $(POST_JS_WORKER)
-	emcc $(FFMPEG_WEBM_BC) $(WEBM_SHARED_DEPS) \
-		--post-js $(POST_JS_WORKER) \
-		$(EMCC_COMMON_ARGS)
-
-ffmpeg-mp4.js: $(FFMPEG_MP4_BC) $(PRE_JS) $(POST_JS_SYNC)
-	emcc $(FFMPEG_MP4_BC) $(MP4_SHARED_DEPS) \
-		--post-js $(POST_JS_SYNC) \
-		$(EMCC_COMMON_ARGS)
 
 ffmpeg-worker-mp4.js: $(FFMPEG_MP4_BC) $(PRE_JS) $(POST_JS_WORKER)
 	emcc $(FFMPEG_MP4_BC) \
