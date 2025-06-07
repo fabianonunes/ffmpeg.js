@@ -98,7 +98,7 @@ build/ffmpeg-mp4/ffmpeg.bc:
 	EM_PKG_CONFIG_PATH=$(FFMPEG_MP4_PC_PATH) emconfigure ./configure \
 		$(FFMPEG_COMMON_ARGS) \
 		&& \
-	emmake make -j8 && \
+	emmake make -j && \
 	cp ffmpeg ffmpeg.bc
 
 # Compile bitcode to JavaScript.
