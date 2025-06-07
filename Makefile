@@ -38,12 +38,15 @@ FFMPEG_COMMON_ARGS = \
 	\
 	--disable-runtime-cpudetect \
 	--disable-swscale-alpha \
+	--disable-autodetect \
+	\
 	--enable-small \
 	\
 	--disable-programs \
 	--enable-ffmpeg \
 	\
 	--disable-avdevice \
+	--disable-swresample \
 	--disable-swscale \
 	--disable-postproc \
 	--disable-pthreads \
@@ -62,10 +65,9 @@ FFMPEG_COMMON_ARGS = \
 	--disable-vdpau \
 	\
 	--disable-everything \
-	--enable-decoder=aac \
 	--enable-demuxer=concat,aac,h264,mov \
 	--enable-muxer=mp4 \
-	--enable-protocol=file,pipe \
+	--enable-protocol=file \
 	--enable-bsf=h264_mp4toannexb \
 	\
 	--disable-bzlib \
