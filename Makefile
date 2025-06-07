@@ -16,13 +16,10 @@ webm: ffmpeg-webm.js ffmpeg-worker-webm.js
 mp4: ffmpeg-worker-mp4.js
 
 clean: clean-js \
-	clean-fribidi \
 	clean-libvpx clean-ffmpeg-webm \
 	clean-lame clean-x264 clean-ffmpeg-mp4
 clean-js:
 	rm -f -- ffmpeg*.js
-clean-fribidi:
-	-cd build/fribidi && rm -rf dist && make clean
 clean-libvpx:
 	-cd build/libvpx && rm -rf dist && make clean
 clean-lame:
@@ -33,24 +30,6 @@ clean-ffmpeg-webm:
 	-cd build/ffmpeg-webm && rm -f ffmpeg.bc && make clean
 clean-ffmpeg-mp4:
 	-cd build/ffmpeg-mp4 && rm -f ffmpeg.bc && make clean
-
-build/fribidi/configure:
-	cd build/fribidi && ./bootstrap
-
-build/fribidi/dist/lib/libfribidi.so: build/fribidi/configure
-	cd build/fribidi && \
-	git reset --hard && \
-	patch -p1 < ../fribidi-make.patch && \
-	emconfigure ./configure \
-		CFLAGS=-O3 \
-		NM=llvm-nm \
-		--prefix="$$(pwd)/dist" \
-		--disable-dependency-tracking \
-		--disable-debug \
-		--without-glib \
-		&& \
-	emmake make -j8 && \
-	emmake make install
 
 build/libvpx/dist/lib/libvpx.so:
 	cd build/libvpx && \
