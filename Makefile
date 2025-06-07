@@ -17,13 +17,11 @@ mp4: ffmpeg-worker-mp4.js
 
 clean: clean-js \
 	clean-libvpx clean-ffmpeg-webm \
-	clean-lame clean-x264 clean-ffmpeg-mp4
+	clean-x264 clean-ffmpeg-mp4
 clean-js:
 	rm -f -- ffmpeg*.js
 clean-libvpx:
 	-cd build/libvpx && rm -rf dist && make clean
-clean-lame:
-	-cd build/lame && rm -rf dist && make clean
 clean-x264:
 	-cd build/x264 && rm -rf dist && make clean
 clean-ffmpeg-webm:
@@ -50,21 +48,6 @@ build/libvpx/dist/lib/libvpx.so:
 		--disable-vp8-decoder \
 		--disable-vp9 \
 		--disable-vp10 \
-		&& \
-	emmake make -j8 && \
-	emmake make install
-
-build/lame/dist/lib/libmp3lame.so:
-	cd build/lame && \
-	emconfigure ./configure \
-		--prefix="$$(pwd)/dist" \
-		--host=x86-none-linux \
-		--disable-static \
-		\
-		--disable-gtktest \
-		--disable-analyzer-hooks \
-		--disable-decoder \
-		--disable-frontend \
 		&& \
 	emmake make -j8 && \
 	emmake make install

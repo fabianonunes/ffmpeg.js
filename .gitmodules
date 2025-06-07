@@ -2,10 +2,6 @@
 	path = build/libvpx
 	url = https://chromium.googlesource.com/webm/libvpx
 	ignore = dirty
-[submodule "build/lame"]
-	path = build/lame
-	url = https://github.com/rbrito/lame.git
-	ignore = dirty
 [submodule "build/x264"]
 	path = build/x264
 	url = https://git.videolan.org/git/x264.git
