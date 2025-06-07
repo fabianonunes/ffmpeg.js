@@ -3,7 +3,6 @@
 # <https://kripken.github.io/emscripten-site/docs/getting_started/downloads.html>.
 
 PRE_JS = build/pre.js
-POST_JS_SYNC = build/post-sync.js
 POST_JS_WORKER = build/post-worker.js
 
 FFMPEG_MP4_BC = build/ffmpeg-mp4/ffmpeg.bc
