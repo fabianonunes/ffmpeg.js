@@ -8,44 +8,15 @@ POST_JS_WORKER = build/post-worker.js
 
 FFMPEG_MP4_BC = build/ffmpeg-mp4/ffmpeg.bc
 FFMPEG_MP4_PC_PATH = ../x264/dist/lib/pkgconfig
-MP4_SHARED_DEPS = \
-	build/x264/dist/lib/libx264.so
 
 all: mp4
 mp4: ffmpeg-worker-mp4.js
 
-clean: clean-js \
-	clean-x264 clean-ffmpeg-mp4
+clean: clean-js clean-ffmpeg-mp4
 clean-js:
 	rm -f -- ffmpeg*.js
-clean-x264:
-	-cd build/x264 && rm -rf dist && make clean
 clean-ffmpeg-mp4:
 	-cd build/ffmpeg-mp4 && rm -f ffmpeg.bc && make clean
-
-build/x264/dist/lib/libx264.so:
-	cd build/x264 && \
-	git reset --hard && \
-	patch -p1 < ../x264-configure.patch && \
-	emconfigure ./configure \
-		--prefix="$$(pwd)/dist" \
-		--extra-cflags="-Wno-unknown-warning-option" \
-		--host=x86-none-linux \
-		--disable-cli \
-		--enable-shared \
-		--disable-opencl \
-		--disable-thread \
-		--disable-asm \
-		\
-		--disable-avs \
-		--disable-swscale \
-		--disable-lavf \
-		--disable-ffms \
-		--disable-gpac \
-		--disable-lsmash \
-		&& \
-	emmake make -j8 && \
-	emmake make install
 
 # TODO(Kagami): Emscripten documentation recommends to always use shared
 # libraries but it's not possible in case of ffmpeg because it has
