@@ -16,13 +16,11 @@ webm: ffmpeg-webm.js ffmpeg-worker-webm.js
 mp4: ffmpeg-worker-mp4.js
 
 clean: clean-js \
-	clean-freetype clean-fribidi \
+	clean-fribidi \
 	clean-libvpx clean-ffmpeg-webm \
 	clean-lame clean-x264 clean-ffmpeg-mp4
 clean-js:
 	rm -f -- ffmpeg*.js
-clean-freetype:
-	-cd build/freetype && rm -rf dist && make clean
 clean-fribidi:
 	-cd build/fribidi && rm -rf dist && make clean
 clean-libvpx:
@@ -35,31 +33,6 @@ clean-ffmpeg-webm:
 	-cd build/ffmpeg-webm && rm -f ffmpeg.bc && make clean
 clean-ffmpeg-mp4:
 	-cd build/ffmpeg-mp4 && rm -f ffmpeg.bc && make clean
-
-build/freetype/builds/unix/configure:
-	cd build/freetype && ./autogen.sh
-
-# XXX(Kagami): host/build flags are used to enable cross-compiling
-# (values must differ) but there should be some better way to achieve
-# that: it probably isn't possible to build on x86 now.
-build/freetype/dist/lib/libfreetype.so: build/freetype/builds/unix/configure
-	cd build/freetype && \
-	git reset --hard && \
-	patch -p1 < ../freetype-asmjs.patch && \
-	emconfigure ./configure \
-		CFLAGS="-O3" \
-		--prefix="$$(pwd)/dist" \
-		--host=x86-none-linux \
-		--build=x86_64 \
-		--disable-static \
-		\
-		--without-zlib \
-		--without-bzip2 \
-		--without-png \
-		--without-harfbuzz \
-		&& \
-	emmake make -j8 && \
-	emmake make install
 
 build/fribidi/configure:
 	cd build/fribidi && ./bootstrap

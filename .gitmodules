@@ -14,10 +14,6 @@
 	path = build/x264
 	url = https://git.videolan.org/git/x264.git
 	ignore = dirty
-[submodule "build/freetype"]
-	path = build/freetype
-	url = https://git.sv.nongnu.org/r/freetype/freetype2.git
-	ignore = dirty
 [submodule "build/ffmpeg-webm"]
 	path = build/ffmpeg-webm
 	url = https://git.ffmpeg.org/ffmpeg.git
