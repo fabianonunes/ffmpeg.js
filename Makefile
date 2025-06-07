@@ -17,12 +17,10 @@ mp4: ffmpeg-worker-mp4.js
 
 clean: clean-js \
 	clean-freetype clean-fribidi \
-	clean-opus clean-libvpx clean-ffmpeg-webm \
+	clean-libvpx clean-ffmpeg-webm \
 	clean-lame clean-x264 clean-ffmpeg-mp4
 clean-js:
 	rm -f -- ffmpeg*.js
-clean-opus:
-	-cd build/opus && rm -rf dist && make clean
 clean-freetype:
 	-cd build/freetype && rm -rf dist && make clean
 clean-fribidi:
@@ -37,21 +35,6 @@ clean-ffmpeg-webm:
 	-cd build/ffmpeg-webm && rm -f ffmpeg.bc && make clean
 clean-ffmpeg-mp4:
 	-cd build/ffmpeg-mp4 && rm -f ffmpeg.bc && make clean
-
-build/opus/configure:
-	cd build/opus && ./autogen.sh
-
-build/opus/dist/lib/libopus.so: build/opus/configure
-	cd build/opus && \
-	emconfigure ./configure \
-		CFLAGS=-O3 \
-		--prefix="$$(pwd)/dist" \
-		--disable-static \
-		--disable-doc \
-		--disable-extra-programs \
-		&& \
-	emmake make -j8 && \
-	emmake make install
 
 build/freetype/builds/unix/configure:
 	cd build/freetype && ./autogen.sh
