@@ -15,39 +15,13 @@ all: mp4
 mp4: ffmpeg-worker-mp4.js
 
 clean: clean-js \
-	clean-libvpx \
 	clean-x264 clean-ffmpeg-mp4
 clean-js:
 	rm -f -- ffmpeg*.js
-clean-libvpx:
-	-cd build/libvpx && rm -rf dist && make clean
 clean-x264:
 	-cd build/x264 && rm -rf dist && make clean
 clean-ffmpeg-mp4:
 	-cd build/ffmpeg-mp4 && rm -f ffmpeg.bc && make clean
-
-build/libvpx/dist/lib/libvpx.so:
-	cd build/libvpx && \
-	emconfigure ./configure \
-		--prefix="$$(pwd)/dist" \
-		--target=generic-gnu \
-		--disable-dependency-tracking \
-		--disable-multithread \
-		--disable-runtime-cpu-detect \
-		--enable-shared \
-		--disable-static \
-		\
-		--disable-examples \
-		--disable-docs \
-		--disable-unit-tests \
-		--disable-webm-io \
-		--disable-libyuv \
-		--disable-vp8-decoder \
-		--disable-vp9 \
-		--disable-vp10 \
-		&& \
-	emmake make -j8 && \
-	emmake make install
 
 build/x264/dist/lib/libx264.so:
 	cd build/x264 && \
