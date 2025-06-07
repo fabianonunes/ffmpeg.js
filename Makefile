@@ -6,11 +6,6 @@ PRE_JS = build/pre.js
 POST_JS_SYNC = build/post-sync.js
 POST_JS_WORKER = build/post-worker.js
 
-LIBASS_PC_PATH = ../freetype/dist/lib/pkgconfig:../fribidi/dist/lib/pkgconfig
-LIBASS_DEPS = \
-	build/fribidi/dist/lib/libfribidi.so \
-	build/freetype/dist/lib/libfreetype.so
-
 FFMPEG_MP4_BC = build/ffmpeg-mp4/ffmpeg.bc
 FFMPEG_MP4_PC_PATH = ../x264/dist/lib/pkgconfig
 MP4_SHARED_DEPS = \
@@ -21,7 +16,7 @@ webm: ffmpeg-webm.js ffmpeg-worker-webm.js
 mp4: ffmpeg-worker-mp4.js
 
 clean: clean-js \
-	clean-freetype clean-fribidi clean-libass \
+	clean-freetype clean-fribidi \
 	clean-opus clean-libvpx clean-ffmpeg-webm \
 	clean-lame clean-x264 clean-ffmpeg-mp4
 clean-js:
@@ -32,8 +27,6 @@ clean-freetype:
 	-cd build/freetype && rm -rf dist && make clean
 clean-fribidi:
 	-cd build/fribidi && rm -rf dist && make clean
-clean-libass:
-	-cd build/libass && rm -rf dist && make clean
 clean-libvpx:
 	-cd build/libvpx && rm -rf dist && make clean
 clean-lame:
@@ -99,24 +92,6 @@ build/fribidi/dist/lib/libfribidi.so: build/fribidi/configure
 		--disable-dependency-tracking \
 		--disable-debug \
 		--without-glib \
-		&& \
-	emmake make -j8 && \
-	emmake make install
-
-build/libass/configure:
-	cd build/libass && ./autogen.sh
-
-build/libass/dist/lib/libass.so: build/libass/configure $(LIBASS_DEPS)
-	cd build/libass && \
-	EM_PKG_CONFIG_PATH=$(LIBASS_PC_PATH) emconfigure ./configure \
-		CFLAGS="-O3" \
-		--prefix="$$(pwd)/dist" \
-		--disable-static \
-		--disable-enca \
-		--disable-fontconfig \
-		--disable-require-system-font-provider \
-		--disable-harfbuzz \
-		--disable-asm \
 		&& \
 	emmake make -j8 && \
 	emmake make install
