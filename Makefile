@@ -12,11 +12,10 @@ MP4_SHARED_DEPS = \
 	build/x264/dist/lib/libx264.so
 
 all: mp4
-webm: ffmpeg-webm.js ffmpeg-worker-webm.js
 mp4: ffmpeg-worker-mp4.js
 
 clean: clean-js \
-	clean-libvpx clean-ffmpeg-webm \
+	clean-libvpx \
 	clean-x264 clean-ffmpeg-mp4
 clean-js:
 	rm -f -- ffmpeg*.js
@@ -24,8 +23,6 @@ clean-libvpx:
 	-cd build/libvpx && rm -rf dist && make clean
 clean-x264:
 	-cd build/x264 && rm -rf dist && make clean
-clean-ffmpeg-webm:
-	-cd build/ffmpeg-webm && rm -f ffmpeg.bc && make clean
 clean-ffmpeg-mp4:
 	-cd build/ffmpeg-mp4 && rm -f ffmpeg.bc && make clean
 
