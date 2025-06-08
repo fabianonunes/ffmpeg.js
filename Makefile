@@ -49,7 +49,6 @@ FFMPEG_COMMON_ARGS = \
 	--disable-os2threads \
 	--disable-network \
 	--disable-lsp \
-	--disable-lzo \
 	--disable-rdft \
 	--disable-faan \
 	--disable-pixelutils \
