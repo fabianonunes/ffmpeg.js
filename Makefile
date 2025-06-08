@@ -103,7 +103,7 @@ build/ffmpeg-mp4/ffmpeg.bc:
 # for simple tests and 32M tends to run slower than 64M.
 
 EMCC_COMMON_ARGS = \
-	-s TOTAL_MEMORY=134217728 \
+	-s TOTAL_MEMORY=33554432 \
 	-s AGGRESSIVE_VARIABLE_ELIMINATION=1 \
 	-s INLINING_LIMIT=0 \
 	-s ASSERTIONS=0 \
