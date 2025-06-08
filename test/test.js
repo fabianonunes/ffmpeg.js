@@ -6,7 +6,7 @@ var Worker = require("webworker-threads").Worker;
 var ffmpeg_webm = require("../ffmpeg-webm");
 var ffmpeg_mp4 = require("../ffmpeg-mp4");
 
-function noop() {};
+function noop() {}
 var testDataPath = path.join(__dirname, "test.webm");
 var testData = new Uint8Array(fs.readFileSync(testDataPath));
 // Mute uncaughtException warnings.
@@ -257,6 +257,25 @@ describe("WebM", function() {
       expect(file.data.length).to.be.above(0);
       expect(file.data).to.be.an.instanceof(Uint8Array);
     });
+
+    it("should encode sequence of frames to WebM", function() {
+      var res = ffmpeg_webm({
+        // FIXME(Kagami): pattern_type=sequence doesn't work with NODEFS
+        // for some reason.
+        arguments: [
+          "-pattern_type", "glob",
+          "-i", "/data/test-frame*.jpg",
+          "out.webm",
+        ],
+        stdin: noop,
+        print: noop,
+        printErr: noop,
+        mounts: [{type: "NODEFS", opts: {root: "test"}, mountpoint: "/data"}],
+      });
+      var file = res.MEMFS[0];
+      expect(file.name).to.equal("out.webm");
+      expect(file.data.length).to.be.above(0);
+    });
   });
 
   describe("Worker", function() {
@@ -281,7 +300,8 @@ describe("WebM", function() {
           expect(stderr).to.be.empty;
           expect(msg.data).to.equal(0);
           expect(stdout).to.match(/^ffmpeg version /);
-          worker.terminate();
+          // FIXME(Kagami): This cause segfault on Node 6.x.
+          // worker.terminate();
           done();
           break;
         }
@@ -366,6 +386,25 @@ describe("MP4", function() {
       expect(file.data.length).to.be.above(0);
       expect(file.data).to.be.an.instanceof(Uint8Array);
     });
+  });
+
+  it("should encode test file to MP4/AAC at MEMFS", function() {
+    var res = ffmpeg_mp4({
+      arguments: [
+        "-i", "test.webm",
+        "-vn",
+        "-frames:a", "1", "-c:a", "aac",
+        "out.mp4",
+      ],
+      stdin: noop,
+      print: noop,
+      printErr: noop,
+      MEMFS: [{name: "test.webm", data: testData}],
+    });
+    expect(res.MEMFS).to.have.length(1);
+    var file = res.MEMFS[0];
+    expect(file.name).to.equal("out.mp4");
+    expect(file.data.length).to.be.above(0);
   });
 
   // TODO(Kagami): Test worker builds with Karma. node-webworker-threads

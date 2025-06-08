@@ -25,6 +25,23 @@ function __ffmpegjs(__ffmpegjs_opts) {
     }
   });
 
+  // XXX(Kagami): Prevent Emscripten to call `process.exit` at the end of
+  // execution on Node.
+  // There is no longer `NODE_STDOUT_FLUSH_WORKAROUND` and it seems to
+  // be the best way to accomplish that.
+  Module["preInit"] = function() {
+    if (ENVIRONMENT_IS_NODE) {
+      exit = Module["exit"] = function(status) {
+        ABORT = true;
+        EXITSTATUS = status;
+        STACKTOP = initialStackTop;
+        exitRuntime();
+        if (Module["onExit"]) Module["onExit"](status);
+        throw new ExitStatus(status);
+      };
+    }
+  };
+
   Module["preRun"] = function() {
     (__ffmpegjs_opts["mounts"] || []).forEach(function(mount) {
       var fs = FS.filesystems[mount["type"]];
@@ -50,6 +67,21 @@ function __ffmpegjs(__ffmpegjs_opts) {
     FS.mkdir("/work");
     FS.chdir("/work");
 
+    FS.registerDevice(FS.makedev(14, 3), {
+      write: (stream, buffer, offset, length, pos) => {
+        const chunk = buffer.slice(offset, offset + length);
+        self.postMessage({
+          type: "output",
+          data: {
+            chunk,
+            size: length,
+          },
+        }, [chunk.buffer]);
+        return length;
+      },
+    });
+    FS.mkdev('/dev/output', FS.makedev(14, 3));
+
     (__ffmpegjs_opts["MEMFS"] || []).forEach(function(file) {
       if (file["name"].match(/\//)) {
         throw new Error("Bad file name");
@@ -63,28 +95,14 @@ function __ffmpegjs(__ffmpegjs_opts) {
       if (file["name"].match(/\//)) {
         throw new Error("Bad file name");
       }
-      FS.createLazyFile('/work', file["name"], file["data"], true, false);
+      const ref = FS.createLazyFile('/work', file["name"], file["data"], true, true);
+      ref.stream_ops.close = function (stream) {
+        FS.truncate(stream.path, 0);
+      };
     });
   };
 
   Module["postRun"] = function() {
-    var SimpleSet = function() {
-      var obj = Object.create(null);
-      var hasProto = false;
-      return {
-        has: function(prop) {
-          return prop === "__proto__" ? hasProto : prop in obj;
-        },
-        set: function(prop) {
-          if (prop === "__proto__") {
-            hasProto = true;
-          } else {
-            obj[prop] = true;
-          }
-        },
-      };
-    };
-
     // NOTE(Kagami): Search for files only in working directory, one
     // level depth. Since FFmpeg shouldn't normally create
     // subdirectories, it should be enough.
@@ -102,12 +120,12 @@ function __ffmpegjs(__ffmpegjs_opts) {
       });
     }
 
-    var inFiles = SimpleSet();
+    var inFiles = Object.create(null);
     (__ffmpegjs_opts["MEMFS"] || []).forEach(function(file) {
-      inFiles.set(file["name"]);
+      inFiles[file.name] = null;
     });
     var outFiles = listFiles("/work").filter(function(file) {
-      return !inFiles.has(file.name);
+      return !(file.name in inFiles);
     }).map(function(file) {
       var data = __ffmpegjs_toU8(file.contents);
       return {"name": file.name, "data": data};
@@ -115,3 +133,4 @@ function __ffmpegjs(__ffmpegjs_opts) {
     __ffmpegjs_return = {"MEMFS": outFiles};
     Module["done"](__ffmpegjs_return)
   };
+  // #region
