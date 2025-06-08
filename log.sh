@@ -1,22 +1,23 @@
 #!/bin/bash
-set -ex;
+set -e;
 
-EMVERSIONS=$(emsdk list | grep -E '^\s+\*' | awk '{ print $2 }')
+EMVERSIONS=$(emcc --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')
+HASHID=$(md5sum ./ffmpeg-worker-mp4.js | cut -d ' ' -f 1)
 
-HASHID=($(md5sum ./ffmpeg-worker-mp4.js))
-cd build/ffmpeg-mp4 || exit
-VERSID=$(git describe)
-COMMITHASH=$(git rev-parse HEAD)
-echo "$VERSID ($COMMITHASH) / build_hash:[$HASHID]"
-cd ../.. || exit
-echo "$EMVERSIONS" > "$HASHID.config";
+FFMPEG_VERSION=$(git -C build/ffmpeg-mp4 describe)
+FFMPEG_COMMIT=$(git -C build/ffmpeg-mp4 rev-parse HEAD)
 
-{ echo "ffmpeg@($COMMITHASH)"; echo "$1"; echo "$2"; } >> "$HASHID.config"
+{
+  echo "emcc: $EMVERSIONS";
+  echo "---"
+  echo "ffmpeg: $FFMPEG_VERSION ($FFMPEG_COMMIT)";
+  echo "---"
+  echo "EMCC_CFLAGS:"
+  echo "$1";
+  echo "---"
+  echo "FFMPEG_COMMON_ARGS:"
+  echo "$2";
+} > "$HASHID.config"
 
-# echo "$1" >> "$HASHID.config"
-# echo "$2" >> "$HASHID.config"
-
-mkdir -p "dist/$VERSID-$HASHID"
-cat build/pre.js ffmpeg-worker-mp4.js build/post-worker.js > out
-mv out ffmpeg-worker-mp4.js
-mv ffmpeg-worker-mp4* ./*.config "dist/$VERSID-$HASHID"
+mkdir -p "dist/$FFMPEG_VERSION-$HASHID"
+mv ffmpeg-worker-mp4.js ffmpeg_g.wasm ./*.config "dist/$FFMPEG_VERSION-$HASHID"

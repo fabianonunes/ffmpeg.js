@@ -3,17 +3,15 @@
 # <https://kripken.github.io/emscripten-site/docs/getting_started/downloads.html>.
 
 PRE_JS = build/pre.js
-POST_JS_WORKER = build/post-worker.js
-FFMPEG_MP4_BC = build/ffmpeg-mp4/ffmpeg.bc
+POST_JS = build/post.js
 
 all: mp4
 mp4: ffmpeg-worker-mp4.js
-
 clean: clean-js clean-ffmpeg-mp4
 clean-js:
 	rm -f -- ffmpeg*.js
 clean-ffmpeg-mp4:
-	-cd build/ffmpeg-mp4 && rm -f ffmpeg.bc && make clean
+	-cd build/ffmpeg-mp4 && make clean
 
 # TODO(Kagami): Emscripten documentation recommends to always use shared
 # libraries but it's not possible in case of ffmpeg because it has
@@ -90,31 +88,23 @@ FFMPEG_COMMON_ARGS = \
 	# --enable-demuxer=concat,aac,h264,mov,hls,mpegts \
 	# --enable-parser=h264 \
 
-build/ffmpeg-mp4/ffmpeg.bc:
-	cd build/ffmpeg-mp4 && \
-	emconfigure ./configure \
-		$(FFMPEG_COMMON_ARGS) \
-		&& \
-	emmake make -j && \
-	cp ffmpeg ffmpeg.bc
-
-# Compile bitcode to JavaScript.
-# NOTE(Kagami): Bump heap size to 64M, default 16M is not enough even
-# for simple tests and 32M tends to run slower than 64M.
-
-EMCC_COMMON_ARGS = \
-	-s TOTAL_MEMORY=33554432 \
+EMCC_CFLAGS = \
+	-s INITIAL_MEMORY=33554432 \
 	-s AGGRESSIVE_VARIABLE_ELIMINATION=1 \
 	-s INLINING_LIMIT=0 \
 	-s ASSERTIONS=0 \
-	-s MEMFS_APPEND_TO_TYPED_ARRAYS=1 \
 	-s WASM=1 \
-	-s BINARYEN=1 \
+	-Oz \
 	--closure 0 \
-	-O3 \
-	--memory-init-file 0 \
-	-o $@
+	--extern-pre-js ../../$(PRE_JS) \
+	--extern-post-js ../../$(POST_JS)
 
-ffmpeg-worker-mp4.js: $(FFMPEG_MP4_BC) $(PRE_JS) $(POST_JS_WORKER)
-	emcc $(FFMPEG_MP4_BC) $(EMCC_COMMON_ARGS)
-	@./log.sh "$(EMCC_COMMON_ARGS)" "$(FFMPEG_COMMON_ARGS)"
+build/ffmpeg-mp4/ffmpeg:
+	@cd build/ffmpeg-mp4 && \
+	emconfigure ./configure $(FFMPEG_COMMON_ARGS) && \
+	env EMCC_CFLAGS="$(EMCC_CFLAGS)" emmake make -j
+
+ffmpeg-worker-mp4.js: build/ffmpeg-mp4/ffmpeg
+	cp build/ffmpeg-mp4/ffmpeg ffmpeg-worker-mp4.js
+	cp build/ffmpeg-mp4/ffmpeg_g.wasm ffmpeg_g.wasm
+	@./log.sh "$(EMCC_CFLAGS)" "$(FFMPEG_COMMON_ARGS)"
