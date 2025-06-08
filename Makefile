@@ -4,9 +4,7 @@
 
 PRE_JS = build/pre.js
 POST_JS_WORKER = build/post-worker.js
-
 FFMPEG_MP4_BC = build/ffmpeg-mp4/ffmpeg.bc
-FFMPEG_MP4_PC_PATH = ../x264/dist/lib/pkgconfig
 
 all: mp4
 mp4: ffmpeg-worker-mp4.js
@@ -94,7 +92,7 @@ FFMPEG_COMMON_ARGS = \
 
 build/ffmpeg-mp4/ffmpeg.bc:
 	cd build/ffmpeg-mp4 && \
-	EM_PKG_CONFIG_PATH=$(FFMPEG_MP4_PC_PATH) emconfigure ./configure \
+	emconfigure ./configure \
 		$(FFMPEG_COMMON_ARGS) \
 		&& \
 	emmake make -j && \
@@ -118,6 +116,5 @@ EMCC_COMMON_ARGS = \
 	-o $@
 
 ffmpeg-worker-mp4.js: $(FFMPEG_MP4_BC) $(PRE_JS) $(POST_JS_WORKER)
-	emcc $(FFMPEG_MP4_BC) \
-		$(EMCC_COMMON_ARGS)
+	emcc $(FFMPEG_MP4_BC) $(EMCC_COMMON_ARGS)
 	@./log.sh "$(EMCC_COMMON_ARGS)" "$(FFMPEG_COMMON_ARGS)"
