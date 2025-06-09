@@ -97,7 +97,7 @@ EMCC_CFLAGS = \
 	-s MALLOC=emmalloc \
 	-s ENVIRONMENT=worker \
 	-Oz \
-	--closure 1 \
+	--closure 0 \
 	--pre-js ../../$(PRE_JS) \
 	--post-js ../../$(POST_JS)
 
