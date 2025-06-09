@@ -89,15 +89,17 @@ FFMPEG_COMMON_ARGS = \
 
 EMCC_CFLAGS = \
 	-Wno-unused-command-line-argument \
-	-s INITIAL_MEMORY=33554432 \
+	-s INITIAL_HEAP=33554432 \
 	-s AGGRESSIVE_VARIABLE_ELIMINATION=1 \
 	-s INLINING_LIMIT=0 \
 	-s ASSERTIONS=0 \
 	-s WASM=1 \
+	-s ENVIRONMENT=worker \
+	-s SHARED_MEMORY=0 \
 	-Oz \
 	--closure 0 \
-	--extern-pre-js ../../$(PRE_JS) \
-	--extern-post-js ../../$(POST_JS)
+	--pre-js ../../$(PRE_JS) \
+	--post-js ../../$(POST_JS)
 
 build/ffmpeg-mp4/ffmpeg:
 	@cd build/ffmpeg-mp4 && \
