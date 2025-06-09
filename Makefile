@@ -94,6 +94,7 @@ EMCC_CFLAGS = \
 	-s INLINING_LIMIT=0 \
 	-s ASSERTIONS=0 \
 	-s WASM=1 \
+	-s MALLOC=emmalloc \
 	-s ENVIRONMENT=worker \
 	-s SHARED_MEMORY=0 \
 	-Oz \
