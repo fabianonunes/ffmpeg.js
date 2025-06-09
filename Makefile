@@ -88,6 +88,7 @@ FFMPEG_COMMON_ARGS = \
 	# --enable-parser=h264 \
 
 EMCC_CFLAGS = \
+	-Wunused-command-line-argument \
 	-s INITIAL_MEMORY=33554432 \
 	-s AGGRESSIVE_VARIABLE_ELIMINATION=1 \
 	-s INLINING_LIMIT=0 \
