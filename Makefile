@@ -97,7 +97,7 @@ EMCC_CFLAGS = \
 	-s ENVIRONMENT=worker \
 	-s SHARED_MEMORY=0 \
 	-Oz \
-	--closure 0 \
+	--closure 1 \
 	--pre-js ../../$(PRE_JS) \
 	--post-js ../../$(POST_JS)
 

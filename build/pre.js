@@ -21,7 +21,7 @@ function __ffmpegjs(__ffmpegjs_opts = {}) {
   });
 
   Module["preRun"] = function() {
-    __ffmpegjs_opts.mounts?.forEach(function(mount) {
+    __ffmpegjs_opts["mounts"]?.forEach(function(mount) {
       var fs = FS.filesystems[mount["type"]];
       if (!fs)
         throw new Error("Bad mount type");
@@ -51,8 +51,8 @@ function __ffmpegjs(__ffmpegjs_opts = {}) {
         self.postMessage({
           type: "output",
           data: {
-            chunk,
-            size: length,
+            "chunk": chunk,
+            "size": length,
           },
         }, [chunk.buffer]);
         return length;
@@ -60,7 +60,7 @@ function __ffmpegjs(__ffmpegjs_opts = {}) {
     });
     FS.mkdev('/dev/output', FS.makedev(14, 3));
 
-    __ffmpegjs_opts.MEMFS?.forEach(file => {
+    __ffmpegjs_opts["MEMFS"]?.forEach(file => {
       const { name, data } = file;
 
       if (name.match(/\//))
@@ -72,7 +72,7 @@ function __ffmpegjs(__ffmpegjs_opts = {}) {
       FS.close(fd);
     });
 
-    __ffmpegjs_opts.LAZYFS?.forEach(file =>{
+    __ffmpegjs_opts["LAZYFS"]?.forEach(file =>{
       const { name, data } = file;
 
       if (name.match(/\//))
