@@ -1,6 +1,4 @@
-function __ffmpegjs(__ffmpegjs_opts) {
-  __ffmpegjs_opts = __ffmpegjs_opts || {};
-  var __ffmpegjs_return;
+function __ffmpegjs(__ffmpegjs_opts = {}) {
   var Module = {};
 
   function __ffmpegjs_toU8(data) {
@@ -23,11 +21,11 @@ function __ffmpegjs(__ffmpegjs_opts) {
   });
 
   Module["preRun"] = function() {
-    (__ffmpegjs_opts["mounts"] || []).forEach(function(mount) {
+    __ffmpegjs_opts.mounts?.forEach(function(mount) {
       var fs = FS.filesystems[mount["type"]];
-      if (!fs) {
+      if (!fs)
         throw new Error("Bad mount type");
-      }
+
       var mountpoint = mount["mountpoint"];
       // NOTE(Kagami): Subdirs are not allowed in the paths to simplify
       // things and avoid ".." escapes.
@@ -62,20 +60,25 @@ function __ffmpegjs(__ffmpegjs_opts) {
     });
     FS.mkdev('/dev/output', FS.makedev(14, 3));
 
-    (__ffmpegjs_opts["MEMFS"] || []).forEach(function(file) {
-      if (file["name"].match(/\//)) {
+    __ffmpegjs_opts.MEMFS?.forEach(file => {
+      const { name, data } = file;
+
+      if (name.match(/\//))
         throw new Error("Bad file name");
-      }
-      var fd = FS.open(file["name"], "w+");
-      var data = __ffmpegjs_toU8(file["data"]);
-      FS.write(fd, data, 0, data.length);
+
+      const fd = FS.open(name, "w+");
+      const contents = __ffmpegjs_toU8(data);
+      FS.write(fd, contents, 0, contents.length);
       FS.close(fd);
     });
-    (__ffmpegjs_opts["LAZYFS"] || []).forEach(function(file) {
-      if (file["name"].match(/\//)) {
+
+    __ffmpegjs_opts.LAZYFS?.forEach(file =>{
+      const { name, data } = file;
+
+      if (name.match(/\//))
         throw new Error("Bad file name");
-      }
-      const ref = FS.createLazyFile('/work', file["name"], file["data"], true, true);
+
+      const ref = FS.createLazyFile('/work', name, data, true, true);
       ref.stream_ops.close = function (stream) {
         FS.truncate(stream.path, 0);
       };
@@ -83,34 +86,6 @@ function __ffmpegjs(__ffmpegjs_opts) {
   };
 
   Module["postRun"] = function() {
-    // NOTE(Kagami): Search for files only in working directory, one
-    // level depth. Since FFmpeg shouldn't normally create
-    // subdirectories, it should be enough.
-    function listFiles(dir) {
-      var contents = FS.lookupPath(dir).node.contents;
-      var filenames = Object.keys(contents);
-      // Fix for possible file with "__proto__" name. See
-      // <https://github.com/kripken/emscripten/issues/3663> for
-      // details.
-      if (contents.__proto__ && contents.__proto__.name === "__proto__") {
-        filenames.push("__proto__");
-      }
-      return filenames.map(function(filename) {
-        return contents[filename];
-      });
-    }
-
-    var inFiles = Object.create(null);
-    (__ffmpegjs_opts["MEMFS"] || []).forEach(function(file) {
-      inFiles[file.name] = null;
-    });
-    var outFiles = listFiles("/work").filter(function(file) {
-      return !(file.name in inFiles);
-    }).map(function(file) {
-      var data = __ffmpegjs_toU8(file.contents);
-      return {"name": file.name, "data": data};
-    });
-    __ffmpegjs_return = {"MEMFS": outFiles};
-    Module["done"](__ffmpegjs_return)
+    Module["done"]()
   };
   // #region
