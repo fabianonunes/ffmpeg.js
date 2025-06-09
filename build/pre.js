@@ -1,7 +1,4 @@
-var __ffmpegjs_utf8ToStr;
-
 function __ffmpegjs(__ffmpegjs_opts) {
-  __ffmpegjs_utf8ToStr = UTF8ArrayToString;
   __ffmpegjs_opts = __ffmpegjs_opts || {};
   var __ffmpegjs_return;
   var Module = {};
@@ -24,23 +21,6 @@ function __ffmpegjs(__ffmpegjs_opts) {
       Module[key] = __ffmpegjs_opts[key];
     }
   });
-
-  // XXX(Kagami): Prevent Emscripten to call `process.exit` at the end of
-  // execution on Node.
-  // There is no longer `NODE_STDOUT_FLUSH_WORKAROUND` and it seems to
-  // be the best way to accomplish that.
-  Module["preInit"] = function() {
-    if (ENVIRONMENT_IS_NODE) {
-      exit = Module["exit"] = function(status) {
-        ABORT = true;
-        EXITSTATUS = status;
-        STACKTOP = initialStackTop;
-        exitRuntime();
-        if (Module["onExit"]) Module["onExit"](status);
-        throw new ExitStatus(status);
-      };
-    }
-  };
 
   Module["preRun"] = function() {
     (__ffmpegjs_opts["mounts"] || []).forEach(function(mount) {
